@@ -119,7 +119,7 @@ public class CannonController : MonoBehaviour
         {
             rb.mass = _currentMass;
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-            rb.linearVelocity = firePoint.forward * _currentForce;
+            rb.velocity = firePoint.forward * _currentForce;
         }
 
         // Pasar metadatos del disparo a la bala
@@ -135,4 +135,4 @@ public class CannonController : MonoBehaviour
         // Auto-destruir si no impacta en 8 segundos
         Destroy(proj, 8f);
     }
-}
+}
