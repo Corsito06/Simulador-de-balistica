@@ -13,7 +13,6 @@ public class CannonController : MonoBehaviour
     [SerializeField] private Slider      pitchSlider;    // Angulo vertical (0 a 85)
     [SerializeField] private Slider      powerSlider;    // Fuerza / Velocidad inicial
     [SerializeField] private TMP_Dropdown massDropdown;  // Seleccion de masa
-    [SerializeField] private Button      shootButton;
 
     [Header("UI - Textos de informacion")]
     [SerializeField] private TextMeshProUGUI yawText;
@@ -51,10 +50,6 @@ public class CannonController : MonoBehaviour
             massDropdown.value = 1;         // Valor por defecto: 1 kg
             massDropdown.onValueChanged.AddListener(OnMassChanged);
         }
-
-        // --- Boton de disparo ---
-        if (shootButton != null)
-            shootButton.onClick.AddListener(Shoot);
 
         // Inicializar lecturas y rotacion inicial
         OnYawChanged();
@@ -97,6 +92,15 @@ public class CannonController : MonoBehaviour
     {
         // 90f mantiene el cilindro acostado horizontalmente
         transform.localRotation = Quaternion.Euler(90f - _currentPitch, _currentYaw, 0f);
+    }
+
+    void Update()
+    {
+        // Clic izquierdo del mouse dispara el proyectil.
+        // La guarda de EventSystem evita disparar al hacer clic en sliders o dropdowns de la UI.
+        if (Input.GetMouseButtonDown(0) &&
+            !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            Shoot();
     }
 
     public void Shoot()
