@@ -1,26 +1,21 @@
 using UnityEngine;
 
 /// <summary>
-/// Componente de la bala. Registra tiempo de vuelo y datos de impacto,
-/// luego los envía al RegistroDisparo.
+/// Componente de la bala.
+/// Cronometra el vuelo y, al primer impacto contra algo que NO sea el suelo,
+/// envia los datos fisicos al ReporteTiro.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class Bala : MonoBehaviour
 {
-    // Datos del disparo configurados por CannonController al instanciar
+    public int numeroDisparo; 
+    // Metadatos del disparo — asignados por CannonController al instanciar
     [HideInInspector] public float anguloDisparo;
     [HideInInspector] public float fuerzaDisparo;
     [HideInInspector] public float masaDisparo;
-    [HideInInspector] public int   numeroDisparo;
 
-    private float     _tiempoInicio;
-    private bool      _impactoRegistrado = false;
-    private Rigidbody _rb;
-
-    void Awake()
-    {
-        _rb = GetComponent<Rigidbody>();
-    }
+    private float _tiempoInicio;
+    private bool  _impactoRegistrado = false;
 
     void Start()
     {
@@ -31,42 +26,29 @@ public class Bala : MonoBehaviour
     {
         if (_impactoRegistrado) return;
 
-        // Ignorar colision con el suelo (tagear el Plane como "Ground" en el Inspector)
-        if (col.gameObject.CompareTag("Ground")) return;
+        // Ignorar el suelo: la bala puede rebotar en el piso sin disparar el reporte
+        if (col.gameObject.CompareTag("Suelo")) return;
 
         _impactoRegistrado = true;
 
         float   tiempoVuelo  = Time.time - _tiempoInicio;
-        Vector3 puntoImpacto = col.contacts[0].point;
-        float   velRelativa  = col.relativeVelocity.magnitude;
+        Vector3 puntoImpacto = col.GetContact(0).point;   // API recomendada por Unity
         float   impulso      = col.impulse.magnitude;
 
-        if (RegistroDisparo.Instancia != null)
-        {
-            RegistroDisparo.Instancia.RegistrarImpacto(
-                numeroDisparo, tiempoVuelo, puntoImpacto,
-                velRelativa, impulso,
-                anguloDisparo, fuerzaDisparo, masaDisparo,
-                col.gameObject.name
-            );
-        }
+        if (ReporteTiro.Instancia != null)
+            ReporteTiro.Instancia.MostrarReporte(tiempoVuelo, puntoImpacto, impulso);
 
-        // Destruir la bala un poco despues para que el impulso se aplique
-        Destroy(gameObject, 0.1f);
+        // Destruir la bala un frame despues para que el impulso fisico se aplique
+        Destroy(gameObject, 0.05f);
     }
 
-    // Si la bala nunca impacta (cae fuera de rango), reportar de todas formas
+    // Fallback: si la bala cae fuera de rango y es destruida sin impactar
     void OnDestroy()
     {
-        if (!_impactoRegistrado && RegistroDisparo.Instancia != null)
+        if (!_impactoRegistrado && ReporteTiro.Instancia != null)
         {
             float tiempoVuelo = Time.time - _tiempoInicio;
-            RegistroDisparo.Instancia.RegistrarImpacto(
-                numeroDisparo, tiempoVuelo, transform.position,
-                0f, 0f,
-                anguloDisparo, fuerzaDisparo, masaDisparo,
-                "Sin impacto"
-            );
+            ReporteTiro.Instancia.MostrarReporte(tiempoVuelo, transform.position, 0f);
         }
     }
 }
