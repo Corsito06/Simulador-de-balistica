@@ -12,7 +12,7 @@ public class CannonController : MonoBehaviour
     [SerializeField] private Slider      yawSlider;      // Giro horizontal (-90 a 90)
     [SerializeField] private Slider      pitchSlider;    // Angulo vertical (0 a 85)
     [SerializeField] private Slider      powerSlider;    // Fuerza / Velocidad inicial
-    [SerializeField] private TMP_Dropdown massDropdown;  // Seleccion de masa
+    public Slider massSlider;                             // Masa del proyectil (kg)
 
     [Header("UI - Textos de informacion")]
     [SerializeField] private TextMeshProUGUI yawText;
@@ -20,14 +20,10 @@ public class CannonController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI powerText;
     [SerializeField] private TextMeshProUGUI massText;
 
-    // Valores de masa disponibles (kg)
-    private static readonly float[] MasasDisponibles = { 0.5f, 1f, 5f, 10f };
-
     private float _currentYaw;
     private float _currentPitch;
     private float _currentForce;
-    private float _currentMass = 1f;
-    private int   _shotNumber  = 0;
+    private int   _shotNumber = 0;
 
     void Start()
     {
@@ -39,23 +35,17 @@ public class CannonController : MonoBehaviour
         if (pitchSlider != null) pitchSlider.onValueChanged.AddListener(_ => OnPitchChanged());
         if (powerSlider != null) powerSlider.onValueChanged.AddListener(_ => OnPowerChanged());
 
-        // --- Dropdown de masa ---
-        if (massDropdown != null)
+        // --- Slider de masa ---
+        if (massSlider != null)
         {
-            massDropdown.ClearOptions();
-            var opts = new System.Collections.Generic.List<string>();
-            foreach (float m in MasasDisponibles)
-                opts.Add(m + " kg");
-            massDropdown.AddOptions(opts);
-            massDropdown.value = 1;         // Valor por defecto: 1 kg
-            massDropdown.onValueChanged.AddListener(OnMassChanged);
+            massSlider.onValueChanged.AddListener(_ => OnMassChanged());
+            OnMassChanged(); // mostrar valor inicial
         }
 
         // Inicializar lecturas y rotacion inicial
         OnYawChanged();
         OnPitchChanged();
         OnPowerChanged();
-        OnMassChanged(massDropdown != null ? massDropdown.value : 1);
     }
 
     void OnYawChanged()
@@ -81,11 +71,10 @@ public class CannonController : MonoBehaviour
         if (powerText != null) powerText.text = $"Fuerza: {_currentForce:F1} m/s";
     }
 
-    void OnMassChanged(int index)
+    void OnMassChanged()
     {
-        if (index < 0 || index >= MasasDisponibles.Length) return;
-        _currentMass = MasasDisponibles[index];
-        if (massText != null) massText.text = $"Masa: {_currentMass} kg";
+        if (massSlider == null) return;
+        if (massText != null) massText.text = $"Masa: {massSlider.value:F1} kg";
     }
 
     void UpdateRotation()
@@ -109,6 +98,9 @@ public class CannonController : MonoBehaviour
 
         _shotNumber++;
 
+        // Leer masa actual directo del slider
+        float masa = (massSlider != null) ? massSlider.value : 1f;
+
         // Notificar al registro que empieza un nuevo tiro
         if (RegistroDisparo.Instancia != null)
             RegistroDisparo.Instancia.IniciarTiro(_shotNumber);
@@ -121,9 +113,9 @@ public class CannonController : MonoBehaviour
         Rigidbody rb = proj.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.mass = _currentMass;
+            rb.mass = massSlider.value;                                  // masa exacta del slider
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-            rb.velocity = firePoint.forward * _currentForce;
+            rb.velocity = firePoint.forward * _currentForce;       // aplicar fuerza
         }
 
         // Pasar metadatos del disparo a la bala
@@ -132,7 +124,7 @@ public class CannonController : MonoBehaviour
         {
             balaComp.anguloDisparo  = _currentPitch;
             balaComp.fuerzaDisparo  = _currentForce;
-            balaComp.masaDisparo    = _currentMass;
+            balaComp.masaDisparo    = masa;
             balaComp.numeroDisparo  = _shotNumber;
         }
 
