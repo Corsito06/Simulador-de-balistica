@@ -1,4 +1,4 @@
-﻿# Simulador Balistico
+# Simulador Balistico
 
 Simulador de fisica de proyectiles desarrollado en **Unity 6**. El jugador controla el angulo de elevacion, la rotacion horizontal, la fuerza de disparo y la masa del proyectil para derribar una pared de bloques. El sistema de fisicas de Unity gobierna la trayectoria y las colisiones. Al impactar, se registran los datos del disparo y se muestra un reporte completo en pantalla.
 
@@ -97,9 +97,7 @@ Assets/
 
 ## Video de demostracion
 
-Video en YouTube: [Ver demo](https://www.youtube.com/LINK_PENDIENTE)
-
-*(Reemplazar el link una vez subido el video)*
+Video en YouTube: [Ver demo](https://youtu.be/GTBb4yCSu6c)
 
 ---
 
