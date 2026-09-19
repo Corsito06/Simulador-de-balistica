@@ -75,19 +75,18 @@ public class ReporteTiro : MonoBehaviour
     public void MostrarReporte(float tiempoVuelo, Vector3 puntoImpacto, float impulso)
     {
         Debug.Log($"[ReporteTiro] MostrarReporte() recibido | Vuelo: {tiempoVuelo:F2}s | Impulso: {impulso:F2}");
-        Debug.Log($"[ReporteTiro] panelReporte asignado: {panelReporte != null}");
-        _tiroActivo = false;
+        // NO apagar _tiroActivo aqui — los bloques necesitan seguir contandose durante la espera
         StartCoroutine(EsperarYMostrar(tiempoVuelo, puntoImpacto, impulso));
     }
 
-    // ── Privados ───────────────────────────────────────────────────────────────
-
-    /// Espera 1.5 s para que la fisica termine de procesar los cubos derribados.
     private IEnumerator EsperarYMostrar(float tiempoVuelo, Vector3 puntoImpacto, float impulso)
     {
         Debug.Log("[ReporteTiro] Corrutina iniciada — esperando 1.5s...");
         yield return new WaitForSeconds(1.5f);
         Debug.Log("[ReporteTiro] 1.5s pasados — activando panel.");
+
+        // Recien aqui cerramos el conteo para capturar todos los bloques que cayeron
+        _tiroActivo = false;
 
         if (textoTiempoVuelo != null)
             textoTiempoVuelo.text = $"Tiempo de vuelo: {tiempoVuelo:F2} s";

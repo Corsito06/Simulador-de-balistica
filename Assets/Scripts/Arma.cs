@@ -128,6 +128,11 @@ public class CannonController : MonoBehaviour
             balaComp.numeroDisparo  = _shotNumber;
         }
 
+        // Ignorar colision entre la bala y el canon para que no explote al salir
+        foreach (Collider cc in GetComponentsInChildren<Collider>())
+            foreach (Collider bc in proj.GetComponentsInChildren<Collider>())
+                Physics.IgnoreCollision(cc, bc);
+
         // Auto-destruir si no impacta en 8 segundos
         Destroy(proj, 8f);
     }

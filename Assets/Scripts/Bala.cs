@@ -29,7 +29,7 @@ public class Bala : MonoBehaviour
 
         if (_impactoRegistrado) return;
 
-        if (col.gameObject.CompareTag("Suelo"))
+        if (col.gameObject.CompareTag("Ground"))
         {
             Debug.Log("[Bala] Es el suelo, ignorando.");
             return;
@@ -52,7 +52,7 @@ public class Bala : MonoBehaviour
         if (ReporteTiro.Instancia != null)
             ReporteTiro.Instancia.MostrarReporte(tiempoVuelo, puntoImpacto, impulso);
 
-        Destroy(gameObject, 0.05f);
+        Destroy(gameObject, 0.4f);
     }
 
     void OnDestroy()
