@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -34,12 +34,16 @@ public class ReporteTiro : MonoBehaviour
     {
         if (Instancia != null && Instancia != this) { Destroy(gameObject); return; }
         Instancia = this;
+        Debug.Log("[ReporteTiro] Singleton inicializado OK.");
     }
 
     void Start()
     {
         if (panelReporte != null) panelReporte.SetActive(false);
+        else Debug.LogWarning("[ReporteTiro] panelReporte NO esta asignado en el Inspector.");
+
         if (botonCerrar  != null) botonCerrar.onClick.AddListener(CerrarPanel);
+        else Debug.LogWarning("[ReporteTiro] botonCerrar NO esta asignado en el Inspector.");
     }
 
     // ── API publica (llamada desde otros scripts) ──────────────────────────────
@@ -53,6 +57,7 @@ public class ReporteTiro : MonoBehaviour
         _bloquesDerribados = 0;
         _tiroActivo        = true;
         if (panelReporte != null) panelReporte.SetActive(false);
+        Debug.Log("[ReporteTiro] IniciarTiro() — contador de bloques reiniciado.");
     }
 
     /// <summary>
@@ -69,6 +74,8 @@ public class ReporteTiro : MonoBehaviour
     /// </summary>
     public void MostrarReporte(float tiempoVuelo, Vector3 puntoImpacto, float impulso)
     {
+        Debug.Log($"[ReporteTiro] MostrarReporte() recibido | Vuelo: {tiempoVuelo:F2}s | Impulso: {impulso:F2}");
+        Debug.Log($"[ReporteTiro] panelReporte asignado: {panelReporte != null}");
         _tiroActivo = false;
         StartCoroutine(EsperarYMostrar(tiempoVuelo, puntoImpacto, impulso));
     }
@@ -78,7 +85,9 @@ public class ReporteTiro : MonoBehaviour
     /// Espera 1.5 s para que la fisica termine de procesar los cubos derribados.
     private IEnumerator EsperarYMostrar(float tiempoVuelo, Vector3 puntoImpacto, float impulso)
     {
+        Debug.Log("[ReporteTiro] Corrutina iniciada — esperando 1.5s...");
         yield return new WaitForSeconds(1.5f);
+        Debug.Log("[ReporteTiro] 1.5s pasados — activando panel.");
 
         if (textoTiempoVuelo != null)
             textoTiempoVuelo.text = $"Tiempo de vuelo: {tiempoVuelo:F2} s";
@@ -96,7 +105,7 @@ public class ReporteTiro : MonoBehaviour
         if (panelReporte != null) panelReporte.SetActive(true);
     }
 
-    private void CerrarPanel()
+    public void CerrarPanel()
     {
         if (panelReporte != null) panelReporte.SetActive(false);
     }

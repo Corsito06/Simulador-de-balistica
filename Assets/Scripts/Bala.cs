@@ -20,35 +20,43 @@ public class Bala : MonoBehaviour
     void Start()
     {
         _tiempoInicio = Time.time;
+        Debug.Log("[Bala] Instanciada. Script activo.");
     }
 
     void OnCollisionEnter(Collision col)
     {
+        Debug.Log($"[Bala] Colision con: '{col.gameObject.name}' | Tag: '{col.gameObject.tag}'");
+
         if (_impactoRegistrado) return;
 
-        // Ignorar el suelo: la bala puede rebotar en el piso sin disparar el reporte
-        if (col.gameObject.CompareTag("Suelo")) return;
+        if (col.gameObject.CompareTag("Suelo"))
+        {
+            Debug.Log("[Bala] Es el suelo, ignorando.");
+            return;
+        }
 
         _impactoRegistrado = true;
 
         float   tiempoVuelo  = Time.time - _tiempoInicio;
-        Vector3 puntoImpacto = col.GetContact(0).point;   // API recomendada por Unity
+        Vector3 puntoImpacto = col.GetContact(0).point;
         float   impulso      = col.impulse.magnitude;
+
+        Debug.Log($"[Bala] IMPACTO registrado | Vuelo: {tiempoVuelo:F2}s | Impulso: {impulso:F2}");
+        Debug.Log($"[Bala] ReporteTiro.Instancia es null: {ReporteTiro.Instancia == null}");
 
         if (ReporteTiro.Instancia != null)
             ReporteTiro.Instancia.MostrarReporte(tiempoVuelo, puntoImpacto, impulso);
 
-        // Destruir la bala un frame despues para que el impulso fisico se aplique
         Destroy(gameObject, 0.05f);
     }
 
-    // Fallback: si la bala cae fuera de rango y es destruida sin impactar
     void OnDestroy()
     {
-        if (!_impactoRegistrado && ReporteTiro.Instancia != null)
+        if (!_impactoRegistrado)
         {
-            float tiempoVuelo = Time.time - _tiempoInicio;
-            ReporteTiro.Instancia.MostrarReporte(tiempoVuelo, transform.position, 0f);
+            Debug.Log("[Bala] Destruida SIN impacto — enviando reporte de fallo.");
+            if (ReporteTiro.Instancia != null)
+                ReporteTiro.Instancia.MostrarReporte(Time.time - _tiempoInicio, transform.position, 0f);
         }
     }
 }
