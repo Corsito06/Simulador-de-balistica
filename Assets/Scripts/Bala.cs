@@ -39,7 +39,12 @@ public class Bala : MonoBehaviour
 
         float   tiempoVuelo  = Time.time - _tiempoInicio;
         Vector3 puntoImpacto = col.GetContact(0).point;
-        float   impulso      = col.impulse.magnitude;
+
+        // col.impulse requiere ProvidesContacts en Unity 6.
+        // Si devuelve 0, se aproxima como J = m * Δv
+        float impulso = col.impulse.magnitude;
+        if (impulso == 0f)
+            impulso = col.relativeVelocity.magnitude * masaDisparo;
 
         Debug.Log($"[Bala] IMPACTO registrado | Vuelo: {tiempoVuelo:F2}s | Impulso: {impulso:F2}");
         Debug.Log($"[Bala] ReporteTiro.Instancia es null: {ReporteTiro.Instancia == null}");
