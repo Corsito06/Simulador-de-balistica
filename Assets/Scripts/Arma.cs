@@ -101,9 +101,15 @@ public class CannonController : MonoBehaviour
         // Leer masa actual directo del slider
         float masa = (massSlider != null) ? massSlider.value : 1f;
 
-        // Notificar al ReporteTiro que empieza un nuevo tiro
+        // Notificar al ReporteTiro con todos los metadatos del tiro
         if (ReporteTiro.Instancia != null)
-            ReporteTiro.Instancia.IniciarTiro();
+            ReporteTiro.Instancia.IniciarTiro(
+                _shotNumber,
+                _currentPitch,
+                _currentForce,
+                massSlider != null ? massSlider.value : 1f,
+                firePoint.position
+            );
 
         // Instanciar la bala
         GameObject proj = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
