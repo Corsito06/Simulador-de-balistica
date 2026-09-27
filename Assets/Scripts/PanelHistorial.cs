@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,12 +29,10 @@ public class PanelHistorial : MonoBehaviour
     {
         if (Instancia != null && Instancia != this) { Destroy(gameObject); return; }
         Instancia = this;
-    }
 
-    void Start()
-    {
-        if (panelHistorial    != null) panelHistorial.SetActive(false);
-        if (btnVerHistorial   != null) btnVerHistorial.onClick.AddListener(AbrirHistorial);
+        // Registrar listeners en Awake (corre aunque el panel empiece inactivo)
+        if (panelHistorial     != null) panelHistorial.SetActive(false);
+        if (btnVerHistorial    != null) btnVerHistorial.onClick.AddListener(AbrirHistorial);
         if (btnCerrarHistorial != null) btnCerrarHistorial.onClick.AddListener(CerrarHistorial);
     }
 
@@ -68,14 +66,11 @@ public class PanelHistorial : MonoBehaviour
         for (int i = disparos.Count - 1; i >= 0; i--)
         {
             RegistroTiro d      = disparos[i];
-            string       estado = d.acierto ? "<color=#69db7c>IMPACTO</color>" : "<color=#ff6b6b>FALLO</color>";
-            string       linea  =
-                $"<b>#{d.numero}</b>  {estado}  |  " +
-                $"Angulo: {d.angulo:F0}°  Fuerza: {d.fuerza:F0} m/s  Masa: {d.masa:F1} kg  |  " +
-                $"Impulso: {d.impulso:F1} N·s  |  " +
-                $"Dist: {d.distanciaImpacto:F1} m  |  " +
-                $"Bloques: {d.bloquesDerribados}  |  " +
-                $"<size=12><color=#adb5bd>{d.timestamp}</color></size>";
+            string estado = d.acierto ? "<color=#69db7c>IMPACTO</color>" : "<color=#ff6b6b>FALLO</color>";
+            string linea  =
+                $"<b>#{d.numero}</b>  {estado}  |  A:{d.angulo:F0}°  F:{d.fuerza:F0}m/s  M:{d.masa:F1}kg\n" +
+                $"<size=11><color=#adb5bd>Vuelo:{d.tiempoVuelo:F2}s  Impulso:{d.impulso:F1}N·s  " +
+                $"Dist:{d.distanciaImpacto:F1}m  Bloques:{d.bloquesDerribados}  {d.timestamp}</color></size>";
 
             CrearFila(linea);
         }
@@ -95,12 +90,12 @@ public class PanelHistorial : MonoBehaviour
 
         var tmp            = go.AddComponent<TextMeshProUGUI>();
         tmp.text           = contenido;
-        tmp.fontSize       = 15;
-        tmp.color          = Color.white;
-        tmp.enableWordWrapping = false;
+        tmp.fontSize           = 13;
+        tmp.color              = Color.white;
+        tmp.enableWordWrapping = true;
 
         var le             = go.AddComponent<UnityEngine.UI.LayoutElement>();
-        le.preferredHeight = 28;
+        le.preferredHeight = 48;
         le.flexibleWidth   = 1;
 
         _filas.Add(go);
