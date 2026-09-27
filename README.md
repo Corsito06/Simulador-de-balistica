@@ -98,7 +98,8 @@ b.linearVelocity segun angulo. Trayectoria parabolica por gravedad |
 
 ## Video de demostracion
 
-Video en YouTube: [Ver demo](https://youtu.be/GTBb4yCSu6c)
+Video en YouTube: [Ver demo] https://youtu.be/b0dypTB8giM
+
 
 ---
 
