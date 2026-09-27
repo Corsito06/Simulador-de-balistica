@@ -73,7 +73,8 @@ Assets/
 
 | Criterio | Implementacion |
 |---|---|
-| Fisica de proyectil | Rigidbody + b.linearVelocity segun angulo. Trayectoria parabolica por gravedad |
+| Fisica de proyectil | Rigidbody + 
+b.linearVelocity segun angulo. Trayectoria parabolica por gravedad |
 | Control de parametros | Sliders de Yaw, Pitch, Fuerza y Masa conectados al CannonController |
 | Disparo por input | Input.GetMouseButtonDown(0) con guarda de EventSystem para no disparar sobre la UI |
 | Registro de impacto | Tiempo de vuelo, punto de impacto via GetContact(0).point, impulso via collision.impulse |
@@ -113,4 +114,4 @@ Abrir con **Unity Hub** → **Open Project** → seleccionar la carpeta raiz.
 
 ## Autor
 
-Proyecto de simulacion balistica — 2026
+Marco Bonacorso Galassi
